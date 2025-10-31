@@ -1,12 +1,18 @@
 import { Link } from 'react-router-dom';
 import Dashboard from '@/pages/Dashboard.jsx';
+import { useUser } from "@/contexts/UserContextProvider";
 
 const HomepageNonLogin = () => {
+
+
+  const { user } = useUser();
   const token = localStorage.getItem('token');
   const isAuthenticated = token !== null && token !== '';
 
   if(isAuthenticated) {
-    return <Dashboard/>
+    if (user?.role === "mentee"){
+      return <Dashboard/>
+    }
   }
   
   return (
