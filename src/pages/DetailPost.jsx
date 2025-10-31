@@ -39,6 +39,7 @@ export default function TutorProfile() {
         about: data.pengalaman,
         skills: data.listMataKuliah.map(mk => mk.nama),
         profilePictureUrl: data.fotoUrl,
+        ipk : data.ipk
       });
     })
     .catch(error => {
@@ -264,6 +265,7 @@ export default function TutorProfile() {
                    {tentor?.email}
                 </a></p>
                 <p>📞 {tentor?.phone}</p>
+                <p>IPK: {tentor?.ipk}</p>
               </div>
             </div>
           </div>

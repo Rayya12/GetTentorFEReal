@@ -32,24 +32,31 @@ export default function ListTentor() {
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState("");
 
-  // ← handleSearch dipindah ke dalam komponen, gunakan setSearchParams
+  const handleLogout = () => {
+    // Hapus token dari localStorage atau cookie
+    localStorage.removeItem("token");
+
+    // Arahkan ke halaman login atau landing page
+    navigate("/admin/login");
+  };
+
   const handleSearch = () => {
     const trimmed = input.trim();
     if (trimmed === "") {
       setSearchParams({});
-      navigate("/admin/dashboard"); // tetap arahkan ke default page sesuai kode asli
+      navigate("/admin/dashboard"); 
     } else {
       setSearchParams({ q: trimmed });
       navigate(`/admin/dashboard?q=${encodeURIComponent(trimmed)}`);
     }
   };
 
-  // Jika q berubah dari URL (back/forward/share), samakan ke input
+
   useEffect(() => {
     setInput(q);
   }, [q]);
 
-  // GET list tentor admin
+ 
   useEffect(() => {
     let active = true;
     const fetchData = async () => {
@@ -124,9 +131,9 @@ export default function ListTentor() {
     return () => {
       active = false;
     };
-  }, [q]); // ← refetch saat q berubah
+  }, [q]); 
 
-  // POST ubah status
+
   const handleChangeStatus = async (id, newStatus) => {
     const prev = tentors;
     setTentors((s) =>
@@ -147,13 +154,12 @@ export default function ListTentor() {
       setErrMsg(
         e?.response?.data?.message || "Gagal mengubah status verifikasi."
       );
-      setTentors(prev); // rollback
+      setTentors(prev); 
     }
   };
 
-  // DELETE tentor
   const handleDelete = async (id) => {
-    if (!window.confirm("Hapus tentor ini secara permanen?")) return;
+    if (!window.confirm("Hapus tentor dengan ini secara permanen?")) return;
     const prev = tentors;
     setTentors((s) => s.filter((x) => x.id !== id));
     try {
@@ -165,11 +171,11 @@ export default function ListTentor() {
     } catch (e) {
       console.error(e);
       setErrMsg(e?.response?.data?.message || "Gagal menghapus tentor.");
-      setTentors(prev); // rollback
+      setTentors(prev);
     }
   };
 
-  // ke halaman detail (TentorAdmin.jsx)
+
   const goDetail = (id) => navigate(`/admin/tentor/${id}`);
 
   return (
@@ -180,7 +186,16 @@ export default function ListTentor() {
           <div className="flex items-center gap-3">
             <img src="/images/gettentor.png" alt="GetTentor" className="h-8" />
           </div>
-          <div className="text-slate-800 font-semibold">Admin</div>
+          <div className="flex items-center p-2">
+            <div className="text-slate-800 font-semibold mr-4">Admin</div>
+          <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+        >
+          Logout
+        </button>
+          </div>
+          
         </div>
       </header>
 
@@ -188,7 +203,7 @@ export default function ListTentor() {
       <div className="flex justify-center mt-6">
         <input
           type="text"
-          placeholder="Masukkan mata kuliah yang ingin dipelajari"
+          placeholder="Masukkan Kata Kunci yang ingin dicari"
           className="w-[400px] px-4 py-2 border rounded-l-md shadow"
           value={input}
           onChange={(e) => setInput(e.target.value)}
