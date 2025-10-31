@@ -164,33 +164,13 @@ export default function RegisterForm() {
         { headers: { 'Content-Type': 'application/json' } }
       );
   
-      // 2. Ambil token
-      const token = registerResponse.data.token;
-  
-      // 3. Upload image if Tentor dan ada file
-      if (role === "tentor" && formData.profilePicture && formData.profilePicture instanceof File) {
-        const formToUpdate = new FormData();
-        formToUpdate.append("file", formData.profilePicture);
-  
-        await axios.put(
-          `${BACKEND_URL}/api/tentors/update-profile`,
-          formToUpdate,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          }
-        );
-      }
-  
-      // 4. Simpen token
-      localStorage.setItem("token", token);
 
       // 5. Redirect success
       setSuccessMessage("Registrasi berhasil!");
       setTimeout(() => {
-        navigate(role === "tentor" ? "/profile" : "/");
+      navigate("/login");
       }, 2000);
+
   
     } catch (error) {
       const message =
@@ -386,19 +366,6 @@ export default function RegisterForm() {
                   >
                     + Tambah pengalaman
                   </button>
-                </div>
-
-
-                <div>
-                  <label htmlFor="profilePicture" className="block text-sm font-medium text-gray-700">Foto Profil</label>
-                  <input
-                    id="profilePicture"
-                    name="profilePicture"
-                    type="file"
-                    accept="image/*"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
-                    onChange={handleInputChange}
-                  />
                 </div>
 
                 <button

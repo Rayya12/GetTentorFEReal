@@ -18,11 +18,12 @@ export default function Dashboard() {
           <Header />
           <SearchBar />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {user?.role === "tentor" ? 
+            {user?.role === "mentee" ? 
             <>
-              Bro
-            </> : <>
               <TutorList />
+            </> : 
+            <>
+            Bro  
             </>}
           </div>
         </>
