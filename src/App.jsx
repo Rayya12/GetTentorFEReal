@@ -10,6 +10,7 @@ import TentorFavorites from '@/pages/TentorFavorites';
 import Home from '@/pages/Home';
 import AdminDashboard from '@/pages/AdminDashboard.jsx';
 import LoginAdmin from '@/pages/LoginAdmin.jsx';
+import DetailPostAdmin from '@/pages/DetailPostAdmin.jsx';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import DetailPost from './pages/DetailPost';
@@ -26,6 +27,12 @@ function App() {
           <Route path="/register" element={<Register/>} />
           <Route path="/admin/login" element={<LoginAdmin/>} />
           
+          <Route path="/admin/tentor/:id" element={
+            <PrivateRoute>
+              <DetailPostAdmin/>
+            </PrivateRoute>
+          } />
+
           <Route path="/admin/dashboard" element={
             <PrivateRoute>
               <AdminDashboard/>
