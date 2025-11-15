@@ -17,7 +17,9 @@ export default function EmailConfirmation(){
             const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/api/forgotPassword${role}/verifyMail/${userEmail}`);
             const message = `Email berhasil dikirim ke: ${userEmail}` 
             setSuccessMessage(message)
-            navigate("/verication",{state:{role:role}})
+            setTimeout(()=>{
+                navigate("/verication",{state:{role:role,email:userEmail}})
+            },2000)
             
         }catch(error){
             const message = error.response?.data?.error || error.message || "Login gagal. Silakan coba lagi.";
