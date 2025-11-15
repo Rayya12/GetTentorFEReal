@@ -58,7 +58,7 @@ export default function LoginForm() {
           {/* Role Tabs */}
           <div className="flex justify-center space-x-8 border-b mb-8">
             <div
-              className={`cursor-pointer pb-2 text-lg font-semibold transition-colors duration-200 ${
+              className={`cursor-pointer pb-2 text-lg font-semibold   ${
                 role === "mentee"
                   ? "text-black border-b-2 border-blue"
                   : "text-gray-500 border-b-2 border-gray-300"

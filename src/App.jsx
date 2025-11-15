@@ -11,11 +11,13 @@ import Home from '@/pages/Home';
 import AdminDashboard from '@/pages/AdminDashboard.jsx';
 import LoginAdmin from '@/pages/LoginAdmin.jsx';
 import DetailPostAdmin from '@/pages/DetailPostAdmin.jsx';
+import OTPVerification from '@/pages/OTPVerification.jsx'
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import DetailPost from './pages/DetailPost';
 import { UserProvider } from "@/contexts/UserContextProvider.jsx";
 import { formToJSON } from 'axios';
+import EmailConfirmation from './pages/EmailConfirmation';
 
 function App() {
   return (
@@ -26,6 +28,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register/>} />
           <Route path="/admin/login" element={<LoginAdmin/>} />
+          <Route path='/forget' element={<EmailConfirmation/>}/>
+          <Route path='/verification' element={<OTPVerification/>}/>
+
           
           <Route path="/admin/tentor/:id" element={
             <PrivateRoute>
