@@ -138,6 +138,13 @@ export default function LoginForm() {
                 Daftar!
               </a>
             </div>
+
+            <div className="text-m text-center text-gray-600">
+              <span>Lupa Password? </span>
+              <a href="./forget" className=" text-blue-dark hover:underline">
+                Klik disini!
+              </a>
+            </div>
           </form>
         </div>
       </div>

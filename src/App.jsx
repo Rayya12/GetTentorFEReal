@@ -18,6 +18,7 @@ import DetailPost from './pages/DetailPost';
 import { UserProvider } from "@/contexts/UserContextProvider.jsx";
 import { formToJSON } from 'axios';
 import EmailConfirmation from './pages/EmailConfirmation';
+import NewPassword from './pages/NewPassword';
 
 function App() {
   return (
@@ -30,7 +31,7 @@ function App() {
           <Route path="/admin/login" element={<LoginAdmin/>} />
           <Route path='/forget' element={<EmailConfirmation/>}/>
           <Route path='/verification' element={<OTPVerification/>}/>
-
+          <Route path='/changePassword' element={<NewPassword/>}/>
           
           <Route path="/admin/tentor/:id" element={
             <PrivateRoute>
