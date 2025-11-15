@@ -33,7 +33,7 @@ export default function(){
             },2000)
 
         }catch(error){
-            const message = error.response?.data?.error || error.message || "OTP gagal. Silakan coba lagi.";
+            const message = error?.response?.data?.message || error.message || "OTP gagal. Silakan coba lagi.";
             setErrorMessage(message);
         }
 
