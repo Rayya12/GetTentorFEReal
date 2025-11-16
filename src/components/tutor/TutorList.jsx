@@ -4,39 +4,46 @@ import axios from 'axios';
 import { useSearchParams } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
+
 const TutorList = () => {
   const [searchParams] = useSearchParams();
-  const q = searchParams.get("q"); 
+  const q = searchParams.get("q");
 
   const [tentors, setTentors] = useState([]);
-  const [loading, setLoading] = useState(true); // State to manage loading status
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const fetchTutors = async () => {
       try {
-        setLoading(true); // Set loading state to true before fetching data
-        let response;
+        setLoading(true);
+        setErrorMessage("");
 
-        if(!q) {
-          response = await axios.get(`${BACKEND_URL}/api/tentors`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-        }else {
-          response = await axios.get(`${BACKEND_URL}/api/tentors/search?q=${q}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            }
-          });
+        let response;
+        const token = localStorage.getItem("token");
+
+        const headers = token
+          ? { Authorization: `Bearer ${token}` }
+          : {};
+
+        if (!q) {
+          response = await axios.get(
+            `${BACKEND_URL}/api/tentors`,
+            { headers }
+          );
+        } else {
+          response = await axios.get(
+            `${BACKEND_URL}/api/tentors/search?q=${encodeURIComponent(q)}`,
+            { headers }
+          );
         }
 
-        setTentors(response.data);
+        setTentors(response.data || []);
       } catch (error) {
-        alert('Error! Baca console pls');
         console.error(error);
+        setErrorMessage("Terjadi kesalahan saat memuat data tentor. Silakan coba lagi.");
       } finally {
-        setLoading(false); // Set loading state to false after fetching data
+        setLoading(false);
       }
     };
 
@@ -45,35 +52,46 @@ const TutorList = () => {
 
   return (
     <section className="mt-8 px-8">
-      <h2 className="text-3xl font-semibold mb-4 text-blue">
+      <h2 className="text-3xl font-semibold mb-4 text-cta">
         {q ? `Hasil Pencarian untuk "${q}"` : 'Daftar Tentor Tersedia'}
       </h2>
 
+      {errorMessage && (
+        <p className="text-center text-red-600 mb-4">
+          {errorMessage}
+        </p>
+      )}
+
       {loading && (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-border border-t-cta"></div>
         </div>
       )}
-      {!loading && tentors.length === 0 && (
-        <p className="text-center text-gray-500">Tidak ada tentor yang ditemukan.</p>
+
+      {!loading && !errorMessage && tentors.length === 0 && (
+        <p className="text-center text-textMuted">
+          Tidak ada tentor yang ditemukan.
+        </p>
       )}
-      <div className="flex flex-wrap gap-6 justify-center items-center">
-        {tentors.map((tentor, idx) => (
-          <TutorCard 
-            key={idx} 
-            id={tentor.id} 
-            image={tentor.fotoUrl} 
-            name={tentor.nama} 
-            subjects={
-              tentor.listMataKuliah
-              .map(
-                mk => mk.nama
-              )
-            }
-            
-            averageRating={tentor.averageRating.toFixed(1)}/>
-        ))}
-      </div>
+
+      {!loading && !errorMessage && tentors.length > 0 && (
+        <div className="flex flex-wrap gap-6 justify-center items-stretch">
+          {tentors.map((tentor, idx) => (
+            <TutorCard
+              key={tentor.id ?? idx}
+              id={tentor.id}
+              image={tentor.fotoUrl}
+              name={tentor.nama}
+              subjects={tentor.listMataKuliah?.map(mk => mk.nama) ?? []}
+              averageRating={
+                typeof tentor.averageRating === "number"
+                  ? tentor.averageRating.toFixed(1)
+                  : "0.0"
+              }
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

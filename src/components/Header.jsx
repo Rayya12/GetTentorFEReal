@@ -1,63 +1,83 @@
 // src/components/Header.jsx
 import { useUser } from "@/contexts/UserContextProvider";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
 
 const Header = () => {
-  const { user, setUser } = useUser(); // pastikan context menyediakan setUser
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Hapus token dari localStorage atau cookie
     localStorage.removeItem("token");
-
-    // Arahkan ke halaman login atau landing page
     navigate("/login");
   };
 
+  const handleLogoClick = () => {
+    if (user?.role === "tentor") {
+      navigate("/profile");
+    } else {
+      navigate("/");
+    }
+  };
+
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
+  const avatarSrc = user?.fotoUrl
+    ? `${BACKEND_URL}/api/images/view/${user.fotoUrl}`
+    : `${BACKEND_URL}/api/images/view/default-profile.png`;
+
   return (
-    <header className="bg-light-blue py-4 px-6 flex justify-between items-center shadow">
+    <header className="bg-header text-textBase py-4 px-6 flex justify-between items-center shadow-md transition-colors duration-300">
+      {/* Logo */}
       <div className="flex items-center space-x-2">
         <img
           src={`/images/gettentor.png`}
-          alt="logo"
+          alt="GetTentor Logo"
           className="w-64 h-12"
-          onClick={() => {
-            if (user?.role === 'tentor') {
-              navigate('/profile'); // atau halaman khusus tentor
-            } else {
-              navigate('/'); // dashboard mentee
-            }
-          }}
-          style={{ cursor: 'pointer' }}
-          />
+          onClick={handleLogoClick}
+          style={{ cursor: "pointer" }}
+        />
       </div>
+
+      {/* Right Section */}
       <div className="flex items-center space-x-4">
+        {/* Tombol Tentor Favorit hanya untuk mentee */}
         {user?.role !== "tentor" && (
           <button
-            onClick={() => navigate('/profile/favorites')}
-            className="bg-blue-dark hover:bg-blue-600 text-white px-5 py-2 rounded-md"
+            onClick={() => navigate("/profile/favorites")}
+            className="bg-cta hover:bg-ctaSoft text-white px-5 py-2 rounded-md font-semibold transition-colors duration-200"
           >
             Tentor Favorit
           </button>
         )}
 
+        {/* Logout */}
         <button
           onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-semibold transition-colors duration-200"
         >
           Logout
         </button>
 
-        <div className="flex items-center space-x-2" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-          <span className="text-gray-700">{user?.name}</span>
-          <img
-            src={`${BACKEND_URL}/api/images/view/${user?.fotoUrl}`}
-            className="w-8 h-8 rounded-full border"
-            alt="User Avatar"
-          />
-        </div>
+        {/* User Info */}
+        {user && (
+          <div
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={handleProfileClick}
+          >
+            <span className="text-textBase">
+              {user.name || user.nama || "User"}
+            </span>
+            <img
+              src={avatarSrc}
+              className="w-8 h-8 rounded-full border border-border object-cover"
+              alt="User Avatar"
+            />
+          </div>
+        )}
       </div>
     </header>
   );

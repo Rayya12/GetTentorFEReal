@@ -45,13 +45,13 @@ function App() {
         {/* Theme toggle button - you can move this to a Layout component later */}
         <button 
           onClick={toggleTheme}
-          className="fixed top-4 right-4 z-50 p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors shadow-lg"
+          className="fixed bottom-4 left-4 z-50 p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors shadow-lg"
         >
           <span className="dark:hidden">🌙 Dark</span>
           <span className="hidden dark:inline">☀️ Light</span>
         </button>
         
-        <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+        
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -95,7 +95,6 @@ function App() {
               }/>
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </div>
       </UserProvider>
     </BrowserRouter>
   );

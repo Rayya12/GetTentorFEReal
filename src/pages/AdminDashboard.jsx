@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
 
@@ -24,19 +23,16 @@ const statusStyle = (status) => {
 
 export default function ListTentor() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams(); // ← pakai setter
+  const [searchParams, setSearchParams] = useSearchParams();
   const q = searchParams.get("q") || "";
-  const [input, setInput] = useState(q); // ← sinkron input dengan q
+  const [input, setInput] = useState(q);
 
   const [tentors, setTentors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState("");
 
   const handleLogout = () => {
-    // Hapus token dari localStorage atau cookie
     localStorage.removeItem("token");
-
-    // Arahkan ke halaman login atau landing page
     navigate("/admin/login");
   };
 
@@ -44,80 +40,59 @@ export default function ListTentor() {
     const trimmed = input.trim();
     if (trimmed === "") {
       setSearchParams({});
-      navigate("/admin/dashboard"); 
+      navigate("/admin/dashboard");
     } else {
       setSearchParams({ q: trimmed });
       navigate(`/admin/dashboard?q=${encodeURIComponent(trimmed)}`);
     }
   };
 
-
   useEffect(() => {
     setInput(q);
   }, [q]);
 
- 
   useEffect(() => {
     let active = true;
+
     const fetchData = async () => {
       try {
         setLoading(true);
         setErrMsg("");
 
+        const headers = {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        };
+
+        let res;
         if (!q) {
-          const res = await axios.get(`${BACKEND_URL}/api/admins`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
-          const list = Array.isArray(res.data) ? res.data : res.data?.data || [];
-          if (!active) return;
-          setTentors(
-            list.map((t) => ({
-              id: t.id ?? t.tentorId ?? t.mahasiswaId,
-              name:
-                t.nama ??
-                t.name ??
-                t.mahasiswa?.nama ??
-                t.user?.fullName ??
-                "Tanpa Nama",
-              ipk: t.ipk ?? t.mahasiswa?.ipk ?? 0,
-              status:
-                t.verification_status ??
-                t.verificationStatus ??
-                t.status ??
-                "PENDING",
-            }))
-          );
+          res = await axios.get(`${BACKEND_URL}/api/admins`, { headers });
         } else {
-          const res = await axios.get(
+          res = await axios.get(
             `${BACKEND_URL}/api/admins?q=${encodeURIComponent(q)}`,
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          );
-          const list = Array.isArray(res.data) ? res.data : res.data?.data || [];
-          if (!active) return;
-          setTentors(
-            list.map((t) => ({
-              id: t.id ?? t.tentorId ?? t.mahasiswaId,
-              name:
-                t.nama ??
-                t.name ??
-                t.mahasiswa?.nama ??
-                t.user?.fullName ??
-                "Tanpa Nama",
-              ipk: t.ipk ?? t.mahasiswa?.ipk ?? 0,
-              status:
-                t.verification_status ??
-                t.verificationStatus ??
-                t.status ??
-                "PENDING",
-            }))
+            { headers }
           );
         }
+
+        const list = Array.isArray(res.data) ? res.data : res.data?.data || [];
+        if (!active) return;
+
+        setTentors(
+          list.map((t) => ({
+            id: t.id ?? t.tentorId ?? t.mahasiswaId,
+            name:
+              t.nama ??
+              t.name ??
+              t.mahasiswa?.nama ??
+              t.user?.fullName ??
+              "Tanpa Nama",
+            ipk: t.ipk ?? t.mahasiswa?.ipk ?? 0,
+            status:
+              t.verification_status ??
+              t.verificationStatus ??
+              t.status ??
+              "PENDING",
+          }))
+        );
       } catch (e) {
         console.error(e);
         setErrMsg(
@@ -127,12 +102,12 @@ export default function ListTentor() {
         active && setLoading(false);
       }
     };
+
     fetchData();
     return () => {
       active = false;
     };
-  }, [q]); 
-
+  }, [q]);
 
   const handleChangeStatus = async (id, newStatus) => {
     const prev = tentors;
@@ -154,12 +129,12 @@ export default function ListTentor() {
       setErrMsg(
         e?.response?.data?.message || "Gagal mengubah status verifikasi."
       );
-      setTentors(prev); 
+      setTentors(prev);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Hapus tentor dengan ini secara permanen?")) return;
+    if (!window.confirm("Hapus tentor ini secara permanen?")) return;
     const prev = tentors;
     setTentors((s) => s.filter((x) => x.id !== id));
     try {
@@ -175,27 +150,25 @@ export default function ListTentor() {
     }
   };
 
-
   const goDetail = (id) => navigate(`/admin/tentor/${id}`);
 
   return (
-    <div className="min-h-screen bg-[#f6fbff]">
+    <div className="min-h-screen bg-bg text-textBase transition-colors duration-300">
       {/* Header */}
-      <header className="bg-[#a7d8f0]">
+      <header className="bg-header shadow-md">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <img src="/images/gettentor.png" alt="GetTentor" className="h-8" />
           </div>
-          <div className="flex items-center p-2">
-            <div className="text-slate-800 font-semibold mr-4">Admin</div>
-          <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
-        >
-          Logout
-        </button>
+          <div className="flex items-center p-2 gap-4">
+            <div className="text-textBase font-semibold">Admin</div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-semibold transition-colors duration-200"
+            >
+              Logout
+            </button>
           </div>
-          
         </div>
       </header>
 
@@ -203,8 +176,8 @@ export default function ListTentor() {
       <div className="flex justify-center mt-6">
         <input
           type="text"
-          placeholder="Masukkan Kata Kunci yang ingin dicari"
-          className="w-[400px] px-4 py-2 border rounded-l-md shadow"
+          placeholder="Masukkan kata kunci yang ingin dicari"
+          className="w-[400px] px-4 py-2 border border-border rounded-l-md shadow-sm bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition-colors duration-200"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -212,7 +185,7 @@ export default function ListTentor() {
           }}
         />
         <button
-          className="bg-blue hover:bg-blue-dark text-white px-4 py-2 rounded-r-md"
+          className="bg-cta hover:bg-ctaSoft text-white px-4 py-2 rounded-r-md font-semibold transition-colors duration-200"
           onClick={handleSearch}
         >
           Cari 🔍
@@ -221,7 +194,7 @@ export default function ListTentor() {
 
       {/* Body */}
       <main className="mx-auto w-full max-w-4xl px-6 py-8">
-        <h2 className="text-3xl font-semibold mb-4 text-blue">
+        <h2 className="text-3xl font-semibold mb-4 text-cta">
           {q ? `Hasil Pencarian untuk "${q}"` : "List Tentor"}
         </h2>
 
@@ -232,29 +205,31 @@ export default function ListTentor() {
         )}
 
         {loading ? (
-          <div className="flex h-48 items-center justify-center text-slate-600">
+          <div className="flex h-48 items-center justify-center text-textMuted">
             Memuat data…
           </div>
         ) : tentors.length === 0 ? (
-          <div className="text-slate-600">Belum ada data tentor.</div>
+          <div className="text-textMuted">Belum ada data tentor.</div>
         ) : (
           <ul className="flex flex-col gap-4">
             {tentors.map((t) => (
               <li
                 key={t.id}
-                className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm"
+                className="flex items-center justify-between rounded-2xl border border-border bg-white dark:bg-slate-900 px-4 py-4 shadow-sm transition-colors duration-300"
               >
                 {/* Left: info */}
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                  <div className="min-w-[220px] font-semibold text-slate-900">
+                  <div className="min-w-[220px] font-semibold text-textBase">
                     {t.name}
                   </div>
-                  <div className="text-slate-600">
+                  <div className="text-textMuted">
                     <span className="font-medium">IPK:</span>{" "}
                     {Number(t.ipk || 0).toFixed(2)}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-600">Status Verifikasi:</span>
+                    <span className="text-textMuted">
+                      Status Verifikasi:
+                    </span>
                     <span
                       className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold ${statusStyle(
                         t.status
@@ -265,9 +240,11 @@ export default function ListTentor() {
 
                     {/* dropdown ubah status */}
                     <select
-                      className="ml-2 rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-300"
+                      className="ml-2 rounded-lg border border-border bg-bg px-2 py-1 text-sm text-textBase focus:outline-none focus:ring-2 focus:ring-cta"
                       value={t.status || "PENDING"}
-                      onChange={(e) => handleChangeStatus(t.id, e.target.value)}
+                      onChange={(e) =>
+                        handleChangeStatus(t.id, e.target.value)
+                      }
                     >
                       {STATUS_OPTIONS.map((opt) => (
                         <option key={opt} value={opt}>
@@ -282,14 +259,14 @@ export default function ListTentor() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => goDetail(t.id)}
-                    className="rounded-xl bg-[#1f6fbf] px-4 py-2 text-sm font-semibold text-white hover:brightness-110 active:brightness-95"
+                    className="rounded-xl bg-cta px-4 py-2 text-sm font-semibold text-white hover:bg-ctaSoft transition-colors duration-200"
                   >
                     Lihat detail
                   </button>
 
                   <button
                     onClick={() => handleDelete(t.id)}
-                    className="rounded-xl p-2 text-rose-600 hover:bg-rose-50 active:bg-rose-100"
+                    className="rounded-xl p-2 text-rose-600 hover:bg-rose-50 active:bg-rose-100 transition-colors duration-200"
                     title="Hapus"
                     aria-label="Hapus tentor"
                   >

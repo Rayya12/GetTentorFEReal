@@ -1,19 +1,23 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  darkMode: 'class', // ← Add this line here
-  content: ["./src/**/*.{html,js,ts,jsx,tsx}", "./public/index.html"],
+export default{
+  darkMode: "class",
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
-      },
       colors: {
-        blue: '#3674B5',
-        'blue-dark': '#3674b5',
-        'light-blue': '#A1E3F9',
-        'cyan':"#D1f8EF"
+        bg: "var(--color-bg)",
+        login: "var(--color-gray-100)",
+        header: "var(--color-header)",
+        surface: "var(--color-surface)",
+        cta: "var(--color-cta)",
+        ctaSoft: "var(--color-cta-soft)",
+        textBase: "var(--color-text-base)",
+        textMuted: "var(--color-text-muted)",
+        border: "var(--color-border)",
+        accent: "var(--color-accent)",
+        accentSoft: "var(--color-accent-soft)",
       },
     },
   },
   plugins: [],
-}
+};
