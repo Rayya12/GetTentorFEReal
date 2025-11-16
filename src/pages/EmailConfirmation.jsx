@@ -12,75 +12,71 @@ export default function EmailConfirmation() {
   const navigate = useNavigate();
 
   const handleVerify = async (e) => {
-  e.preventDefault();
-  setErrorMessage("");
-  setSuccessMessage("");
+    e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
 
-  // Validasi kosong
-  if (!userEmail.trim()) {
-    setErrorMessage("Email tidak boleh kosong.");
-    return;
-  }
+    if (!userEmail.trim()) {
+      setErrorMessage("Email tidak boleh kosong.");
+      return;
+    }
 
-  // Validasi format email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(userEmail)) {
-    setErrorMessage("Format email tidak valid.");
-    return;
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userEmail)) {
+      setErrorMessage("Format email tidak valid.");
+      return;
+    }
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_APP_BACKEND_URL}/api/forgotPassword${role}/verifyMail/${userEmail}`
-    );
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/forgotPassword${role}/verifyMail/${userEmail}`
+      );
 
-    const message = `Email berhasil dikirim ke: ${userEmail}`;
-    setSuccessMessage(message);
+      const message = `Email berhasil dikirim ke: ${userEmail}`;
+      setSuccessMessage(message);
 
-    
       navigate("/verification", { state: { role: role, email: userEmail } });
-    
-
-  } catch (error) {
-    const message =
-      error.response?.data ||
-      error.message ||
-      "Login gagal. Silakan coba lagi.";
-    setErrorMessage(message);
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (error) {
+      const message =
+        error.response?.data ||
+        error.message ||
+        "Login gagal. Silakan coba lagi.";
+      setErrorMessage(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-bg flex items-center justify-center px-4 text-textBase transition-colors duration-300">
+      <div className="w-full max-w-6xl bg-white dark:bg-slate-900 rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row border border-border">
         {/* Kiri */}
-        <div className="hidden lg:block lg:w-1/2 overflow-hidden rounded-l-4xl h-auto">
+        <div className="hidden lg:block lg:w-1/2 overflow-hidden h-auto bg-cta">
           <img
             src="/images/Frame 7.png"
-            alt="Gambar get Tentor"
-            className="bg-blue w-full h-full bg-cover"
+            alt="Gambar GetTentor"
+            className="w-full h-full object-cover"
           />
         </div>
 
         {/* Kanan */}
         <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-          <h1 className="text-gray-900 text-4xl font-bold text-center mb-6">
+          <h1 className="text-textBase text-4xl font-bold text-center mb-4">
             Lupa Password
           </h1>
-          <h2 className="text-gray-900 text-2xl font-semibold text-center mb-6">
-            Masukkan Email untuk verifikasi password
+          <h2 className="text-textBase text-2xl font-semibold text-center mb-6">
+            Masukkan email untuk verifikasi password
           </h2>
 
-          <div className="flex justify-center space-x-8 border-b mb-8">
+          {/* Tabs role */}
+          <div className="flex justify-center space-x-8 border-b border-border mb-8">
             <div
               className={`cursor-pointer pb-2 text-lg font-semibold transition-colors duration-200 ${
                 role === "mentee"
-                  ? "text-black border-b-2 border-blue"
-                  : "text-gray-500 border-b-2 border-gray-300"
+                  ? "text-textBase border-b-2 border-cta"
+                  : "text-textMuted border-b-2 border-border"
               }`}
               onClick={() => !loading && setRole("mentee")}
             >
@@ -90,8 +86,8 @@ export default function EmailConfirmation() {
             <div
               className={`cursor-pointer pb-2 text-lg font-semibold transition-colors duration-200 ${
                 role === "tentor"
-                  ? "text-black border-b-2 border-blue"
-                  : "text-gray-500 border-b-2 border-gray-300"
+                  ? "text-textBase border-b-2 border-cta"
+                  : "text-textMuted border-b-2 border-border"
               }`}
               onClick={() => !loading && setRole("tentor")}
             >
@@ -115,7 +111,7 @@ export default function EmailConfirmation() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-textMuted"
               >
                 Email
               </label>
@@ -123,7 +119,7 @@ export default function EmailConfirmation() {
                 id="email"
                 type="email"
                 disabled={loading}
-                className={`mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta ${
                   loading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onChange={(e) => setUserEmail(e.target.value)}
@@ -134,10 +130,10 @@ export default function EmailConfirmation() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full px-4 py-3 font-semibold rounded-lg shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-3 font-semibold rounded-lg shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-cta transition-colors duration-200 ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue hover:bg-blue-dark"
+                  : "bg-cta hover:bg-ctaSoft"
               }`}
               onClick={handleVerify}
             >

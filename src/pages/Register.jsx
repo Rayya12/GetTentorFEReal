@@ -129,13 +129,12 @@ export default function RegisterForm() {
   const handleFinalRegister = async () => {
     try {
       if (role === "tentor") {
-        // Validasi Format input GPA
         const gpacoma = formData.gpa.replace(",", ".");
         if (!isValidGPA(formData.gpa)) {
           setErrorMessage("IPK harus berupa angka antara 0.00 hingga 4.00 (gunakan titik sebagai pemisah desimal).");
           return;
         }
-        // Validasi pengalaman hanya jika ada lebih dari satu field pengalaman
+
         if (formData.experience.length > 1) {
           const emptyExperience = formData.experience.some(exp => !exp.trim());
           if (emptyExperience) {
@@ -143,9 +142,8 @@ export default function RegisterForm() {
             return;
           }
         }
-
-
       }
+
       const requestData = {
         nim: formData.nim,
         nama: formData.fullName,
@@ -153,25 +151,21 @@ export default function RegisterForm() {
         password: formData.password,
         noTelp: formData.phoneNumber,
         ipk: formData.gpa,
-        pengalaman: formData.experience.map(e => e.trim()), // TODO: Handle delimeter or toList or toString
+        pengalaman: formData.experience.map(e => e.trim()),
         fotoUrl: formData.profilePicture ? formData.profilePicture.name : null
       };
 
-      // 1. Register dulu
       const registerResponse = await axios.post(
         `${BACKEND_URL}/api/${role}s/register`,
         requestData,
         { headers: { 'Content-Type': 'application/json' } }
       );
-  
 
-      // 5. Redirect success
       setSuccessMessage("Registrasi berhasil!");
       setTimeout(() => {
-      navigate("/login");
+        navigate("/login");
       }, 2000);
 
-  
     } catch (error) {
       const message =
         error.response?.data?.error || error.message || "Registrasi gagal. Silakan coba lagi.";
@@ -180,29 +174,38 @@ export default function RegisterForm() {
   };  
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-start justify-center px-4 py-8">
-      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row">
-        <div className="hidden lg:block lg:w-1/2 overflow-hidden rounded-l-2xl h-auto">
+    <div className="min-h-screen bg-login flex items-start justify-center px-4 py-8 transition-colors duration-300">
+      <div className="w-full max-w-6xl bg-white dark:bg-slate-900 rounded-2xl shadow-lg overflow-hidden flex flex-col lg:flex-row transition-colors duration-300">
+        
+        {/* Left Image */}
+        <div className="hidden lg:block lg:w-1/2 overflow-hidden h-auto bg-cta">
           <img
             src={`/images/Frame 8.png`}
             alt="Register Illustration"
-            className="bg-blue w-full h-full object-cover"
+            className="w-full h-full object-cover"
             style={{ minHeight: "100%" }}
           />
         </div>
 
+        {/* Right Form */}
         <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-          <h1 className="text-4xl font-bold text-center text-gray-800 mb-4">Bergabung dengan Kami</h1>
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Buat Akun Baru</h2>
+          <h1 className="text-4xl font-bold text-center text-textBase mb-4">
+            Bergabung dengan Kami
+          </h1>
+          <h2 className="text-2xl font-bold text-center text-textMuted mb-6">
+            Buat Akun Baru
+          </h2>
 
-          <div className="flex justify-center space-x-8 border-b mb-8">
+          {/* Role Tabs */}
+          <div className="flex justify-center space-x-8 border-b border-border mb-8">
             {["mentee", "tentor"].map((r) => (
-              <div
+              <button
                 key={r}
+                type="button"
                 className={`cursor-pointer pb-2 text-lg font-semibold transition-colors duration-200 ${
                   role === r
-                    ? "text-black border-b-2 border-blue"
-                    : "text-gray-500 border-b-2 border-gray-300"
+                    ? "text-textBase border-b-2 border-cta"
+                    : "text-textMuted border-b-2 border-transparent"
                 }`}
                 onClick={() => {
                   setRole(r);
@@ -210,7 +213,7 @@ export default function RegisterForm() {
                 }}
               >
                 {r.charAt(0).toUpperCase() + r.slice(1)}
-              </div>
+              </button>
             ))}
           </div>
 
@@ -229,13 +232,15 @@ export default function RegisterForm() {
 
             {!showTentorExtraForm ? (
               <>
-              <div>
-                  <label htmlFor="nim" className="block text-sm font-medium text-gray-700">NIM</label>
+                <div>
+                  <label htmlFor="nim" className="block text-sm font-medium text-textBase">
+                    NIM
+                  </label>
                   <input
                     id="nim"
                     name="nim"
                     type="number"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
+                    className="mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                     placeholder="Masukkan NIM"
                     value={formData.nim}
                     onChange={handleInputChange}
@@ -245,12 +250,14 @@ export default function RegisterForm() {
                 </div>
                 
                 <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                  <label htmlFor="fullName" className="block text-sm font-medium text-textBase">
+                    Nama Lengkap
+                  </label>
                   <input
                     id="fullName"
                     name="fullName"
                     type="text"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
+                    className="mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                     placeholder="Masukkan nama lengkap"
                     value={formData.fullName}
                     onChange={handleInputChange}
@@ -259,12 +266,14 @@ export default function RegisterForm() {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                  <label htmlFor="email" className="block text-sm font-medium text-textBase">
+                    Email
+                  </label>
                   <input
                     id="email"
                     name="email"
                     type="email"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
+                    className="mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                     placeholder="you@example.com"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -273,12 +282,14 @@ export default function RegisterForm() {
                 </div>
 
                 <div>
-                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Nomor Telepon</label>
+                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-textBase">
+                    Nomor Telepon
+                  </label>
                   <input
                     id="phoneNumber"
                     name="phoneNumber"
                     type="tel"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
+                    className="mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                     placeholder="08xxxxxxxxxx"
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
@@ -287,12 +298,14 @@ export default function RegisterForm() {
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">Kata Sandi</label>
+                  <label htmlFor="password" className="block text-sm font-medium text-textBase">
+                    Kata Sandi
+                  </label>
                   <input
                     id="password"
                     name="password"
                     type="password"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
+                    className="mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleInputChange}
@@ -301,12 +314,14 @@ export default function RegisterForm() {
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Konfirmasi Kata Sandi</label>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-textBase">
+                    Konfirmasi Kata Sandi
+                  </label>
                   <input
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
+                    className="mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                     placeholder="••••••••"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
@@ -317,7 +332,7 @@ export default function RegisterForm() {
                 <button
                   type="button"
                   onClick={handleInitialRegister}
-                  className="w-full py-3 px-6 text-white bg-blue rounded-lg font-semibold shadow-md"
+                  className="w-full py-3 px-6 text-white bg-cta hover:bg-ctaSoft rounded-lg font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-cta"
                 >
                   {`Daftar sebagai ${role.charAt(0).toUpperCase() + role.slice(1)}`}
                 </button>
@@ -325,12 +340,14 @@ export default function RegisterForm() {
             ) : (
               <>
                 <div>
-                  <label htmlFor="gpa" className="block text-sm font-medium text-gray-700">IPK</label>
+                  <label htmlFor="gpa" className="block text-sm font-medium text-textBase">
+                    IPK
+                  </label>
                   <input
                     id="gpa"
                     name="gpa"
                     type="text"
-                    className="mt-1 w-full px-4 py-2 border rounded-lg"
+                    className="mt-1 w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                     placeholder="Contoh: 3.75"
                     value={formData.gpa}
                     onChange={handleInputChange}
@@ -338,12 +355,14 @@ export default function RegisterForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Pengalaman Mengajar</label>
+                  <label className="block text-sm font-medium text-textBase">
+                    Pengalaman Mengajar
+                  </label>
                   {formData.experience.map((exp, index) => (
                     <div key={index} className="flex items-center mb-2">
                       <input
                         type="text"
-                        className="w-full px-4 py-2 border rounded-lg"
+                        className="w-full px-4 py-2 border border-border rounded-lg bg-bg text-textBase focus:outline-none focus:ring-2 focus:ring-cta transition"
                         placeholder={`Pengalaman ${index + 1}`}
                         value={exp}
                         onChange={(e) => handleExperienceChange(index, e.target.value)}
@@ -362,7 +381,7 @@ export default function RegisterForm() {
                   <button
                     type="button"
                     onClick={addExperienceField}
-                    className="mt-1 text-blue text-sm hover:underline"
+                    className="mt-1 text-cta text-sm hover:underline"
                   >
                     + Tambah pengalaman
                   </button>
@@ -371,16 +390,18 @@ export default function RegisterForm() {
                 <button
                   type="button"
                   onClick={handleFinalRegister}
-                  className="w-full py-3 px-6 text-white bg-blue rounded-lg font-semibold shadow-md"
+                  className="w-full py-3 px-6 text-white bg-cta hover:bg-ctaSoft rounded-lg font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-cta"
                 >
                   Selesaikan Pendaftaran Tentor
                 </button>
               </>
             )}
 
-            <div className="text-m text-center text-gray-600">
+            <div className="text-m text-center text-textMuted">
               <span>Sudah punya akun? </span>
-              <a href="./login" className="text-blue hover:underline">Masuk di sini!</a>
+              <a href="./login" className="text-cta hover:underline">
+                Masuk di sini!
+              </a>
             </div>
           </div>
         </div>
