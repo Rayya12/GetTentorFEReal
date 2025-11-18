@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
 
-const TutorCard = ({ id, image, name, subjects, averageRating }) => {
+const TutorCard = ({ id, image, name, subjects, averageRating,countFavorite}) => {
   const navigate = useNavigate();
 
   const imageSrc = image
@@ -47,6 +47,11 @@ const TutorCard = ({ id, image, name, subjects, averageRating }) => {
       {/* Rating */}
       <div className="text-sm mt-5 text-textMuted">
         ⭐ {`${averageRating}`}/5.0
+      </div>
+
+      {/* Favorite */}
+      <div className="text-sm mt-3 text-textMuted">
+        {countFavorite != 0 ? `❤️ ${countFavorite} Favorite!` : `belum difavoritkan`}
       </div>
 
       {/* Action Button */}
