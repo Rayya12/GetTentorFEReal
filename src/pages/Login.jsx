@@ -32,7 +32,7 @@ export default function LoginForm() {
 
       setTimeout(() => {
         navigate(role === "tentor" ? "/profile" : "/");
-      }, 2000);
+      },0);
     } catch (error) {
       const message =
         error.response?.data?.error ||
