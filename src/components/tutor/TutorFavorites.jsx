@@ -87,6 +87,7 @@ const TutorFavorites = () => {
                   ? tentor.averageRating.toFixed(1)
                   : "0.0"
               }
+              countFavorite = {tentor.countFavorite}
             />
           ))
         ) : (
